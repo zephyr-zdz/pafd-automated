@@ -8,12 +8,13 @@ import re
 import base64
 import easyocr
 import io
+import requests
 import numpy
 from PIL import Image
 
 
 from requests import session, post
-
+PUSH_KEY = getenv("PUSH_KEY")
 
 class Fudan:
     """
@@ -103,6 +104,7 @@ class Fudan:
                   "\n***********************\n")
         else:
             print("◉登录失败，请检查账号信息")
+            notify("登录失败，请检查账号信息")
             self.close()
 
     def logout(self):
@@ -152,6 +154,7 @@ class Zlapp(Fudan):
         today = time.strftime("%Y%m%d", time.localtime())
         if last_info["d"]["info"]["date"] == today:
             print("\n*******今日已提交*******")
+            notify("今日已提交")
             self.close()
         else:
             print("\n\n*******未提交*******")
@@ -211,7 +214,7 @@ class Zlapp(Fudan):
 
             save_msg = json_loads(save.text)["m"]
             print(save_msg, '\n\n')
-            time.sleep(0.1)
+            time.sleep(5)
             if(json_loads(save.text)["e"] != 1):
                 break
             
@@ -249,6 +252,24 @@ def get_account():
 
     return uid, psw
 
+
+def notify(_title, _message=None):
+    if not PUSH_KEY:
+        print("未配置PUSH_KEY！")
+        return
+
+    if not _message:
+        _message = _title
+
+    print(_title)
+    print(_message)
+
+    _response = requests.post(f"https://sc.ftqq.com/{PUSH_KEY}.send", {"text": _title, "desp": _message})
+
+    if _response.status_code == 200:
+        print(f"发送通知状态：{_response.content.decode('utf-8')}")
+    else:
+        print(f"发送通知失败：{_response.status_code}")
 
 if __name__ == '__main__':
     uid, psw = get_account()
