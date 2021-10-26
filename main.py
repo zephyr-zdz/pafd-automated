@@ -14,7 +14,7 @@ import numpy
 from PIL import Image
 from requests import session, post
 
-PUSH_KEY = getenv("STD_ID")
+PUSH_KEY = getenv("key")
 
 class Fudan:
     """
