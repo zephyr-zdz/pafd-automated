@@ -97,14 +97,14 @@ class Fudan:
             allow_redirects=False)
 
         print("return status code", post.status_code)
-
+        time.sleep(5)
         if post.status_code == 302:
             print("\n***********************"
                   "\n◉登录成功"
                   "\n***********************\n")
         else:
             print("◉登录失败，请检查账号信息")
-            notify("登录失败，请检查账号信息")
+            notify("◉登录失败，请检查账号信息","出错了")
             self.close()
 
     def logout(self):
@@ -154,7 +154,7 @@ class Zlapp(Fudan):
         today = time.strftime("%Y%m%d", time.localtime())
         if last_info["d"]["info"]["date"] == today:
             print("\n*******今日已提交*******")
-            notify("今日已提交")
+            notify("PAFD已经帮你填好了！","早八好好上课捏(*ﾟ∇ﾟ)")
             self.close()
         else:
             print("\n\n*******未提交*******")
