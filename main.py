@@ -1,7 +1,8 @@
 import json
 import time
 from json import loads as json_loads
-from os import path as os_path, getenv
+from os import path as os_path
+from os import getenv
 from sys import exit as sys_exit
 from getpass import getpass
 import re
@@ -14,7 +15,6 @@ from PIL import Image
 
 
 from requests import session, post
-print("GET Push_key")
 
 class Fudan:
     """
@@ -274,6 +274,7 @@ def notify(_title, _message=None):
 if __name__ == '__main__':
     uid, psw = get_account()
     PUSH_KEY = getenv("PUSH_KEY")
+    print(PUSH_KEY[1])
     # print(uid, psw)
     zlapp_login = 'https://uis.fudan.edu.cn/authserver/login?' \
                   'service=https://zlapp.fudan.edu.cn/site/ncov/fudanDaily'
