@@ -154,7 +154,7 @@ class Zlapp(Fudan):
         today = time.strftime("%Y%m%d", time.localtime())
         if last_info["d"]["info"]["date"] == today:
             print("\n*******今日已提交*******")
-            notify("PAFD已经帮你填好了！","早八好好上课捏(*ﾟ∇ﾟ)")
+            notify("PAFD已经帮你填好了！早八好好上课捏(*ﾟ∇ﾟ)","早八好好上课捏(*ﾟ∇ﾟ)")
             self.close()
         else:
             print("\n\n*******未提交*******")
