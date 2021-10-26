@@ -14,8 +14,6 @@ from PIL import Image
 
 
 from requests import session, post
-
-PUSH_KEY = getenv("PUSH_KEY")
 print("GET Push_key")
 
 class Fudan:
@@ -275,6 +273,7 @@ def notify(_title, _message=None):
 
 if __name__ == '__main__':
     uid, psw = get_account()
+    PUSH_KEY = getenv("PUSH_KEY")
     # print(uid, psw)
     zlapp_login = 'https://uis.fudan.edu.cn/authserver/login?' \
                   'service=https://zlapp.fudan.edu.cn/site/ncov/fudanDaily'
