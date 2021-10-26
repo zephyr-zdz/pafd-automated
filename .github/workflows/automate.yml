@@ -30,4 +30,4 @@ jobs:
         run: sleep $(shuf -i 10-600 -n 1)
         
       - name: run
-        run: STD_ID=${{ secrets.STD_ID }} PASSWORD=${{ secrets.PASSWORD }} python3 main.py
+        run: STD_ID=${{ secrets.STD_ID }} PASSWORD=${{ secrets.PASSWORD }} KEY=${{ secrets.KEY }} python3 main.py
