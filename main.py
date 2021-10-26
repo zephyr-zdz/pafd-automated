@@ -12,9 +12,9 @@ import io
 import requests
 import numpy
 from PIL import Image
-
-
 from requests import session, post
+
+PUSH_KEY = getenv("PUSH_KEY")
 
 class Fudan:
     """
@@ -226,10 +226,9 @@ def get_account():
     """
     uid = getenv("STD_ID")
     psw = getenv("PASSWORD")
-    key = getenv("PUSH_KEY")
     if uid != None and psw != None:
         print("从环境变量中获取了用户名和密码！")
-        return uid, psw , key
+        return uid, psw
     print("\n\n请仔细阅读以下日志！！\n请仔细阅读以下日志！！！！\n请仔细阅读以下日志！！！！！！\n\n")
     if os_path.exists("account.txt"):
         print("读取账号中……")
@@ -273,7 +272,7 @@ def notify(_title, _message=None):
         print(f"发送通知失败：{_response.status_code}")
 
 if __name__ == '__main__':
-    uid, psw,PUSH_KEY= get_account()
+    uid, psw= get_account()
     # print(uid, psw)
     zlapp_login = 'https://uis.fudan.edu.cn/authserver/login?' \
                   'service=https://zlapp.fudan.edu.cn/site/ncov/fudanDaily'
