@@ -274,7 +274,6 @@ def notify(_title, _message=None):
 
 if __name__ == '__main__':
     uid, psw,PUSH_KEY= get_account()
-    print(PUSH_KEY[1])
     # print(uid, psw)
     zlapp_login = 'https://uis.fudan.edu.cn/authserver/login?' \
                   'service=https://zlapp.fudan.edu.cn/site/ncov/fudanDaily'
