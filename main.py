@@ -1,6 +1,7 @@
 import json
 import time
 from json import loads as json_loads
+import os
 from os import path as os_path
 from os import getenv
 from sys import exit as sys_exit
@@ -12,7 +13,9 @@ import io
 import requests
 import numpy
 from PIL import Image
-from requests import session, post
+from PIL import ImageEnhance
+from requests import session, post, adapters
+adapters.DEFAULT_RETRIES = 5
 
 PUSH_KEY = getenv("KEY")
 print(getenv("KEY"))
@@ -34,6 +37,7 @@ class Fudan:
         :param url_login: 登录页，默认服务为空
         """
         self.session = session()
+        self.session.keep_alive = False
         self.session.headers['User-Agent'] = self.UA
         self.url_login = url_login
         self.url_code = url_code
@@ -151,7 +155,13 @@ class Zlapp(Fudan):
         print("◉上一次提交地址为:", position['formattedAddress'])
         # print("◉上一次提交GPS为", position["position"])
         # print(last_info)
+        
+        # 改为上海时区
+        os.environ['TZ'] = 'Asia/Shanghai'
+        time.tzset()
         today = time.strftime("%Y%m%d", time.localtime())
+        print("◉今日日期为:", today)
+        
         if last_info["d"]["info"]["date"] == today:
             print("\n*******今日已提交*******")
             notify("PAFD已经帮你填好了！早八好好上课捏(*ﾟ∇ﾟ)","早八好好上课捏(*ﾟ∇ﾟ)")
@@ -161,9 +171,22 @@ class Zlapp(Fudan):
             self.last_info = last_info["d"]["oldInfo"]
             
     def read_captcha(self, img_byte):
-        image = numpy.array(Image.open(io.BytesIO(img_byte)))
+        img = Image.open(io.BytesIO(img_byte)).convert('L')
+        enh_bri = ImageEnhance.Brightness(img)
+        new_img = enh_bri.enhance(factor=1.5)
+
+        image = numpy.array(new_img)
         reader = easyocr.Reader(['en'])
-        result = reader.readtext(image, detail = 0)
+        horizontal_list, free_list = reader.detect(image, optimal_num_chars=4)
+        character = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        allow_list = list(character)
+        allow_list.extend(list(character.lower()))
+
+        result = reader.recognize(image, 
+                                allowlist=allow_list,
+                                horizontal_list=horizontal_list[0],
+                                free_list=free_list[0],
+                                detail = 0)
         return result[0]
 
     def validate_code(self):
@@ -200,8 +223,8 @@ class Zlapp(Fudan):
                     "city": city,
                     "area": " ".join((province, city, district)),
                     "sfzx": "1",  # 是否在校
-                    "fxyy": "",  # 返校原因
-                    "code": code,
+                    #"fxyy": "",  # 返校原因
+                    #"code": code,
 
                 }
             )
@@ -217,8 +240,6 @@ class Zlapp(Fudan):
             time.sleep(5)
             if(json_loads(save.text)["e"] != 1):
                 break
-            
-
 
 def get_account():
     """
