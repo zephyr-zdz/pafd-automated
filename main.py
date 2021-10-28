@@ -14,11 +14,12 @@ import requests
 import numpy
 from PIL import Image
 from PIL import ImageEnhance
+
 from requests import session, post, adapters
 adapters.DEFAULT_RETRIES = 5
 
 PUSH_KEY = getenv("KEY")
-print(getenv("KEY"))
+
 class Fudan:
     """
     建立与复旦服务器的会话，执行登录/登出操作
