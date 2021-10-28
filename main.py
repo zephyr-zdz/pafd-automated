@@ -224,8 +224,8 @@ class Zlapp(Fudan):
                     "city": city,
                     "area": " ".join((province, city, district)),
                     "sfzx": "1",  # 是否在校
-                    #"fxyy": "",  # 返校原因
-                    #"code": code,
+                    "fxyy": "",  # 返校原因
+                    "code": code,
 
                 }
             )
