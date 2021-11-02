@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ master ]
   schedule:
-    - cron:  '0 1 * * *'
+    - cron:  '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
           
       - name: Random sleep
         if: github.event_name == 'schedule'
-        run: sleep $(shuf -i 300-1000 -n 1)
+        run: sleep $(shuf -i 30-1000 -n 1)
         
       - name: run
         run: STD_ID=${{ secrets.STD_ID }} PASSWORD=${{ secrets.PASSWORD }} KEY=${{ secrets.KEY }} python3 main.py
