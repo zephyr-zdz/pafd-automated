@@ -12,6 +12,7 @@ import easyocr
 import io
 import requests
 import numpy
+import random
 from PIL import Image
 from PIL import ImageEnhance
 
@@ -165,7 +166,7 @@ class Zlapp(Fudan):
         
         if last_info["d"]["info"]["date"] == today:
             print("\n*******今日已提交*******")
-            notify("PAFD已经帮你填好了！早八好好上课捏(*ﾟ∇ﾟ)","早八好好上课捏(*ﾟ∇ﾟ)")
+            notify("PAFD已经帮你填好了！早八好好上课捏(*ﾟ∇ﾟ)"+"，今日数字是"+str(random.randint(1,6)),"早八好好上课捏(*ﾟ∇ﾟ)")
             self.close()
         else:
             print("\n\n*******未提交*******")
