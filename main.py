@@ -150,20 +150,24 @@ class Zlapp(Fudan):
         last_info = get_info.json()
 
         print("◉上一次提交日期为:", last_info["d"]["info"]["date"])
+        # 地区从oldInfo中提取
+        last_area = last_info["d"]["oldInfo"]["area"]
+        print("◉上一次提交的地区是:", last_area)
+        if last_area == "其他国家":
+            pass
+        else:
+            position = last_info["d"]["info"]['geo_api_info']
+            position = json_loads(position)
 
-        position = last_info["d"]["info"]['geo_api_info']
-        position = json_loads(position)
-
-        print("◉上一次提交地址为:", position['formattedAddress'])
-        # print("◉上一次提交GPS为", position["position"])
+            print("◉上一次提交地址为:", position['formattedAddress'])
+            # print("◉上一次提交GPS为", position["position"])
         # print(last_info)
-        
+
         # 改为上海时区
         os.environ['TZ'] = 'Asia/Shanghai'
         time.tzset()
         today = time.strftime("%Y%m%d", time.localtime())
         print("◉今日日期为:", today)
-        
         if last_info["d"]["info"]["date"] == today:
             print("\n*******今日已提交*******")
             notify("PAFD已经帮你填好了！早八好好上课捏(*ﾟ∇ﾟ)"+"，今日数字是"+str(random.randint(1,6)),"早八好好上课捏(*ﾟ∇ﾟ)")
@@ -171,7 +175,7 @@ class Zlapp(Fudan):
         else:
             print("\n\n*******未提交*******")
             self.last_info = last_info["d"]["oldInfo"]
-            
+
     def read_captcha(self, img_byte):
         img = Image.open(io.BytesIO(img_byte)).convert('L')
         enh_bri = ImageEnhance.Brightness(img)
@@ -184,12 +188,13 @@ class Zlapp(Fudan):
         allow_list = list(character)
         allow_list.extend(list(character.lower()))
 
-        result = reader.recognize(image, 
+        result = reader.recognize(image,
                                 allowlist=allow_list,
                                 horizontal_list=horizontal_list[0],
                                 free_list=free_list[0],
                                 detail = 0)
         return result[0]
+
 
     def validate_code(self):
         img = self.session.get(self.url_code).content
@@ -209,27 +214,44 @@ class Zlapp(Fudan):
 
         print("\n\n◉◉提交中")
 
-        geo_api_info = json_loads(self.last_info["geo_api_info"])
         province = self.last_info["province"]
         city = self.last_info["city"]
-        district = geo_api_info["addressComponent"].get("district", "")
-        
+        area = self.last_info["area"]
+        if area == "其他国家":
+            gwszdd = self.last_info["gwszdd"]
+        else:
+            geo_api_info = json_loads(self.last_info["geo_api_info"])
+            district = geo_api_info["addressComponent"].get("district", "")
+
         while(True):
             print("◉正在识别验证码......")
             code = self.validate_code()
             print("◉验证码为:", code)
-            self.last_info.update(
-                {
-                    "tw": "13",
-                    "province": province,
-                    "city": city,
-                    "area": " ".join((province, city, district)),
-                    "sfzx": "1",  # 是否在校
-                    "fxyy": "",  # 返校原因
-                    "code": code,
-
-                }
-            )
+            if area == "其他国家":
+                self.last_info.update(
+                    {
+                        "tw": "13",
+                        "province": province,
+                        "city": city,
+                        "area": area,
+                        "gwszdd": gwszdd,
+                        #"sfzx": "1",  # 是否在校
+                        #"fxyy": "",  # 返校原因
+                        "code": code,
+                    }
+                )
+            else:
+                self.last_info.update(
+                    {
+                        "tw": "13",
+                        "province": province,
+                        "city": city,
+                        "area": " ".join((province, city, district)),
+                        #"sfzx": "1",  # 是否在校
+                        #"fxyy": "",  # 返校原因
+                        "code": code,
+                    }
+                )
             # print(self.last_info)
             save = self.session.post(
                 'https://zlapp.fudan.edu.cn/ncov/wap/fudan/save',
